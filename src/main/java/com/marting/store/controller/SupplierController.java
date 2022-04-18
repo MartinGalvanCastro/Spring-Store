@@ -1,20 +1,27 @@
 package com.marting.store.controller;
 
 import com.marting.store.entity.Supplier;
-import com.marting.store.repository.SupplierRepository;
 import com.marting.store.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
+@RequestMapping("/api/supplier")
+@RestController
 public class SupplierController implements RESTController<Supplier> {
 
 
+    private final SupplierService supplierService;
+
     @Autowired
-    private SupplierService supplierService;
+    public SupplierController(SupplierService supplierService) {
+        this.supplierService = supplierService;
+    }
 
     /**
      * GET request for returning the list of T entities
