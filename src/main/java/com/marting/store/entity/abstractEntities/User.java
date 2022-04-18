@@ -30,6 +30,15 @@ abstract public class User extends BaseEntity {
     @NotBlank(message = "Passwrod "+Constant.PROPERTY_NOT_BLANK)
     private String password;
 
+    public User() {
+    }
+
+    public User(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+
     public String getName() {
         return name;
     }

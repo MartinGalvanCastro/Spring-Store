@@ -2,11 +2,13 @@ package com.marting.store.controller;
 
 import com.marting.store.exception.ErrorResponse;
 import com.marting.store.entity.abstractEntities.BaseEntity;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -74,7 +76,22 @@ public interface RESTController<T extends BaseEntity> {
         ErrorResponse error = new ErrorResponse();
         error.setStatus(HttpStatus.NOT_FOUND.value());
         error.setTimestamp(System.currentTimeMillis());
-        error.setMessage("Client not found -- " + exc.getMessage());
+        error.setMessage("Entity not found -- " + exc.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Exception handler for EmptyResultDataAccessException
+     * @param exc The EntityNotFoundException triggered
+     * @return Error Response with HttpStatus.NOT_FOUND
+     */
+    @ExceptionHandler({EmptyResultDataAccessException.class})
+    @ResponseBody
+    static ResponseEntity<ErrorResponse> handleResourceNotFound(EmptyResultDataAccessException exc){
+        ErrorResponse error = new ErrorResponse();
+        error.setStatus(HttpStatus.NOT_FOUND.value());
+        error.setTimestamp(System.currentTimeMillis());
+        error.setMessage("Entity not found -- " + exc.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
@@ -97,4 +114,16 @@ public interface RESTController<T extends BaseEntity> {
         errorResponse.setMessage(response.toString());
         return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
     }
+
+
+    @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
+    @ResponseBody
+    static ResponseEntity<ErrorResponse> handeNotSupportedMethod(HttpRequestMethodNotSupportedException exc){
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.NOT_IMPLEMENTED.value());
+        errorResponse.setTimestamp(System.currentTimeMillis());
+        errorResponse.setMessage("Method Not Supported");
+        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_IMPLEMENTED);
+    }
+
 }

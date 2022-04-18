@@ -1,6 +1,7 @@
 package com.marting.store.service;
 
 import com.marting.store.entity.Supplier;
+import com.marting.store.repository.ProductRepository;
 import com.marting.store.repository.SupplierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,9 +15,13 @@ public class SupplierService implements ServiceInterface<Supplier> {
 
     private final SupplierRepository supplierRepository;
 
+    private final ProductRepository productRepository;
+
+
     @Autowired
-    public SupplierService(SupplierRepository supplierRepository) {
+    public SupplierService(SupplierRepository supplierRepository, ProductRepository productRepository) {
         this.supplierRepository = supplierRepository;
+        this.productRepository = productRepository;
     }
 
     @Override

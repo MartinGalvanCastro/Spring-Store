@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
-@Table
+@Table(name = "Order_Table")
 public class Order extends BaseEntity implements Serializable {
 
     @Column
