@@ -4,6 +4,7 @@ import com.marting.store.entity.Order;
 import com.marting.store.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,13 +53,11 @@ public class OrderController implements RESTController<Order> {
     /**
      * POST request for creating a new Entity of type T
      *
-     * @param newEntity new Entity of type T.
-     * @return the new entity with an assigned ID
      * @throws MethodArgumentNotValidException if the entity field validation fails
      */
     @Override
-    public Order create(Order newEntity) throws MethodArgumentNotValidException {
-        return orderService.create(newEntity);
+    public Order create(Order newEntity) throws HttpRequestMethodNotSupportedException {
+        throw new HttpRequestMethodNotSupportedException("Method not supported");
     }
 
     /**

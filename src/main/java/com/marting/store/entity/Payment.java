@@ -15,6 +15,7 @@ import javax.validation.constraints.Pattern;
 
 @Entity
 @Table
+
 public class Payment extends BaseEntity {
 
     @Column

@@ -1,5 +1,8 @@
 package com.marting.store.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.marting.store.entity.abstractEntities.BaseEntity;
 import com.marting.store.entity.abstractEntities.User;
 import com.marting.store.entity.constants.Constant;
@@ -12,6 +15,9 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "Order_Table")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Order extends BaseEntity implements Serializable {
 
     @Column
@@ -25,13 +31,14 @@ public class Order extends BaseEntity implements Serializable {
             message = "Total Price "+Constant.NUM_PROPERTY_GREATER_THAN+" 1")
     private double totalPrice;
 
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    @JsonIgnoreProperties({"ordersSubmitted","paymentMethods","password"})
+    private Client orderOwner;
+
     public Order() {
         this.orderStatus = OrderStatus.NEW;
-    }
-
-    public Order(double totalPrice) {
-        this.orderStatus = OrderStatus.NEW;
-        this.totalPrice = totalPrice;
+        this.totalPrice = 10;
     }
 
     public OrderStatus getOrderStatus() {
@@ -50,4 +57,11 @@ public class Order extends BaseEntity implements Serializable {
         this.totalPrice = totalPrice;
     }
 
+    public Client getOrderOwner() {
+        return orderOwner;
+    }
+
+    public void setOrderOwner(Client orderOwner) {
+        this.orderOwner = orderOwner;
+    }
 }

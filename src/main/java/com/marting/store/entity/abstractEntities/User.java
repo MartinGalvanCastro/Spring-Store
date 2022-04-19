@@ -1,5 +1,6 @@
 package com.marting.store.entity.abstractEntities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.marting.store.entity.constants.Constant;
 
 import javax.persistence.Column;
@@ -28,6 +29,7 @@ abstract public class User extends BaseEntity {
     @Column
     @NotNull(message = "Password "+Constant.PROPERTY_NOT_NULL)
     @NotBlank(message = "Passwrod "+Constant.PROPERTY_NOT_BLANK)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     public User() {

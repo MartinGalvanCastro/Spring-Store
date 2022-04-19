@@ -45,7 +45,7 @@ public interface RESTController<T extends BaseEntity> {
      */
     @PostMapping("/")
     @ResponseBody
-    T create(@Valid @RequestBody T newEntity) throws MethodArgumentNotValidException;
+    T create(@Valid @RequestBody T newEntity) throws MethodArgumentNotValidException, HttpRequestMethodNotSupportedException;
 
     /**
      * PUT request for updating an Entity of type T

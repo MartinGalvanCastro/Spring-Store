@@ -1,16 +1,16 @@
 package com.marting.store.service;
 
 import com.marting.store.entity.Client;
+import com.marting.store.entity.Order;
 import com.marting.store.entity.Payment;
 import com.marting.store.repository.ClientRepository;
+import com.marting.store.repository.OrderRepository;
 import com.marting.store.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -21,10 +21,13 @@ public class ClientService implements ServiceInterface<Client> {
 
     private final PaymentRepository paymentRepository;
 
+    private final OrderRepository orderRepository;
+
     @Autowired
-    public ClientService(ClientRepository clientRepository, PaymentRepository paymentRepository) {
+    public ClientService(ClientRepository clientRepository, PaymentRepository paymentRepository, OrderRepository orderRepository) {
         this.clientRepository = clientRepository;
         this.paymentRepository = paymentRepository;
+        this.orderRepository = orderRepository;
     }
 
 
@@ -60,15 +63,15 @@ public class ClientService implements ServiceInterface<Client> {
 
     public List<Payment> getAllPaymentMethods(Long clientId) {
         Optional<Client> client = clientRepository.findById(clientId);
-        if (client.isPresent()) return new ArrayList<>(client.get().getPaymentMethods().values());
+        if (client.isPresent()) return client.get().getPaymentMethods();
         else throw new EntityNotFoundException("Client with Id: " + clientId + " Not found");
     }
 
     public Payment getPaymentById(Long clientId, Long paymentId) throws EntityNotFoundException {
         Optional<Client> client = clientRepository.findById(clientId);
         if (client.isPresent()) {
-            Payment payment = client.get().getPaymentMethods().get(paymentId);
-            if (Objects.nonNull(payment)) return payment;
+            Optional<Payment> payment = client.get().getPaymentMethod(paymentId);
+            if (payment.isPresent()) return payment.get();
             else throw new EntityNotFoundException("Payment with Id: " + paymentId + " Not found");
         } else throw new EntityNotFoundException("Client with Id: " + clientId + " Not found");
     }
@@ -77,7 +80,7 @@ public class ClientService implements ServiceInterface<Client> {
         Optional<Client> client = clientRepository.findById(clientId);
         if(client.isPresent()){
             Payment savedPaymentMethod = paymentRepository.save(newPayment);
-            client.get().addPaymentMehtod(savedPaymentMethod.getId(),savedPaymentMethod);
+            client.get().addPaymentMehtod(savedPaymentMethod);
             clientRepository.save(client.get());
             return savedPaymentMethod;
         } else throw new EntityNotFoundException("Client with Id: " + clientId + " Not found");
@@ -87,10 +90,11 @@ public class ClientService implements ServiceInterface<Client> {
         Optional<Client> client = clientRepository.findById(clientId);
         if(client.isPresent()){
             Client clientFound = client.get();
-            Payment oldPayment = clientFound.getPaymentMethod(paymentId);
-            if(Objects.nonNull(oldPayment)){
+            Optional<Payment> oldPayment = clientFound.getPaymentMethod(paymentId);
+            if(oldPayment.isPresent()){
                 updatedPayment.setId(paymentId);
-                clientFound.getPaymentMethods().replace(paymentId,updatedPayment);
+                int idx = clientFound.getPaymentMethods().indexOf(updatedPayment);
+                clientFound.getPaymentMethods().set(idx,updatedPayment);
                 return updatedPayment;
             } else throw new EntityNotFoundException("Payment with Id: " + paymentId + " Not found");
         }else throw new EntityNotFoundException("Client with Id: " + clientId + " Not found");
@@ -99,10 +103,22 @@ public class ClientService implements ServiceInterface<Client> {
     public void deletePayment(Long clientId, Long paymentId) throws EntityNotFoundException{
         Optional<Client> client = clientRepository.findById(clientId);
         if(client.isPresent()){
-            Client clientFound = client.get();
-            if(Objects.nonNull(clientFound.getPaymentMethod(paymentId))) clientFound.getPaymentMethods().remove(paymentId);
+            Optional<Payment> payment = client.get().getPaymentMethod(paymentId);
+            if(payment.isPresent()) client.get().getPaymentMethods().remove(payment.get());
             else throw new EntityNotFoundException("Payment with Id: " + paymentId + " Not found");
         }else throw new EntityNotFoundException("Client with Id: " + clientId + " Not found");
     }
+
+    public Order createOrder(Long clientId, Order newOrder) throws EntityNotFoundException
+    {
+        Optional<Client> client = clientRepository.findById(clientId);
+        if(client.isPresent()){
+            Order savedOrder = orderRepository.save(newOrder);
+            client.get().addOrder(savedOrder);
+            clientRepository.save(client.get());
+            return  savedOrder;
+        } else throw new EntityNotFoundException("Client with Id: " + clientId + " Not found");
+    }
+
 
 }

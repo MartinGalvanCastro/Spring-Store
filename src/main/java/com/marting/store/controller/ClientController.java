@@ -1,8 +1,10 @@
 package com.marting.store.controller;
 
 import com.marting.store.entity.Client;
+import com.marting.store.entity.Order;
 import com.marting.store.entity.Payment;
 import com.marting.store.service.ClientService;
+import com.marting.store.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +20,7 @@ public class ClientController implements RESTController<Client> {
     private final ClientService clientService;
 
     @Autowired
-    public ClientController(ClientService clientService) {
+    public ClientController(ClientService clientService, OrderService orderService) {
         this.clientService = clientService;
     }
 
@@ -52,6 +54,11 @@ public class ClientController implements RESTController<Client> {
     }
 
 
+    /**
+     * *****************************
+     * Client-Payment Controller
+     *****************************/
+
     @GetMapping("/{idClient}/payment")
     @ResponseBody
     public List<Payment> getAllPayments(@PathVariable("idClient") Long idClient) throws EntityNotFoundException {
@@ -77,14 +84,24 @@ public class ClientController implements RESTController<Client> {
     public Payment updatePayment(@PathVariable("idClient") Long idClient,
                                  @PathVariable("idPayment") Long idPayment,
                                  @Valid @RequestBody Payment updatedPayment) {
-        return clientService.updatePayment(idClient,idPayment,updatedPayment);
+        return clientService.updatePayment(idClient, idPayment, updatedPayment);
     }
 
     @DeleteMapping("/{idClient}/payment/{idPayment}")
     public void deletePayment(@PathVariable("idClient") Long idClient,
-                              @PathVariable("idPayment") Long idPayment){
-        clientService.deletePayment(idClient,idPayment);
+                              @PathVariable("idPayment") Long idPayment) {
+        clientService.deletePayment(idClient, idPayment);
     }
 
+    /**
+     * *****************************
+     * Client-Order Controller
+     *****************************/
+    @PostMapping("{idClient}/order")
+    public Order createOrder(@PathVariable("idClient") long idClient,
+                             @Valid @RequestBody Order newOrder) {
+
+        return clientService.createOrder(idClient, newOrder);
+    }
 
 }
