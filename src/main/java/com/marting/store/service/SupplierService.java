@@ -11,17 +11,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class SupplierService implements ServiceInterface<Supplier> {
+public class SupplierService implements ServiceInterface<Supplier,Long> {
 
     private final SupplierRepository supplierRepository;
 
-    private final ProductRepository productRepository;
-
-
     @Autowired
-    public SupplierService(SupplierRepository supplierRepository, ProductRepository productRepository) {
+    public SupplierService(SupplierRepository supplierRepository) {
         this.supplierRepository = supplierRepository;
-        this.productRepository = productRepository;
     }
 
     @Override

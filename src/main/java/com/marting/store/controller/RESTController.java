@@ -56,7 +56,7 @@ public interface RESTController<T extends BaseEntity> {
      */
     @PutMapping("/{id}")
     @ResponseBody
-    T update(@PathVariable("id") Long id, @Validated @RequestBody T updatedEntity) throws EntityNotFoundException;
+    T update(@PathVariable("id") Long id, @RequestBody T updatedEntity) throws EntityNotFoundException;
 
     /**
      * DELETE request for deleting an Entity of type T

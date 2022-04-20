@@ -1,18 +1,16 @@
 package com.marting.store.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import com.marting.store.entity.abstractEntities.BaseEntity;
 import com.marting.store.entity.constants.Constant;
-import org.springframework.data.rest.core.annotation.RestResource;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 @Table
@@ -26,14 +24,19 @@ public class Product extends BaseEntity implements Serializable {
     private String name;
 
     @Column
-    @NotNull(message = "Price "+Constant.PROPERTY_NOT_NULL)
+    @NotNull(message = "individualPrice "+Constant.PROPERTY_NOT_NULL)
     @Min(value=1,
-        message = "Price "+Constant.NUM_PROPERTY_GREATER_THAN+" 1")
-    private double price;
+        message = "individualPrice "+Constant.NUM_PROPERTY_GREATER_THAN+" 1")
+    private double individualPrice;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="supplier_id")
+    @JsonIgnoreProperties({"password"})
     private Supplier supplier;
+
+    @OneToMany(mappedBy = "product")
+    @JsonIgnore
+    private List<OrderProduct> orderProductList;
 
     public Product() {
         super();
@@ -42,7 +45,7 @@ public class Product extends BaseEntity implements Serializable {
     public Product(String name, double price) {
         super();
         this.name = name;
-        this.price = price;
+        this.individualPrice = price;
         this.supplier = null;
     }
 
@@ -54,12 +57,12 @@ public class Product extends BaseEntity implements Serializable {
         this.name = name;
     }
 
-    public double getPrice() {
-        return price;
+    public double getIndividualPrice() {
+        return individualPrice;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setIndividualPrice(double individualPrice) {
+        this.individualPrice = individualPrice;
     }
 
     public Supplier getSupplier() {
@@ -68,5 +71,31 @@ public class Product extends BaseEntity implements Serializable {
 
     public void setSupplier(Supplier supplier) {
         this.supplier = supplier;
+    }
+
+    public List<OrderProduct> getOrderProductList() {
+        return Collections.unmodifiableList(orderProductList);
+    }
+
+    public void setOrderProductList(List<OrderProduct> orderProductList) {
+        this.orderProductList = orderProductList;
+    }
+
+    public void addOrderProduct(OrderProduct orderProduct){
+        orderProductList.add(orderProduct);
+    }
+
+    public void removeOrderProduct(OrderProduct orderProduct){
+        orderProductList.remove(orderProduct);
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "name='" + name + '\'' +
+                ", individualPrice=" + individualPrice +
+                ", supplier=" + supplier +
+                ", orderProductList=" + orderProductList +
+                '}';
     }
 }

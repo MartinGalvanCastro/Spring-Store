@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ClientService implements ServiceInterface<Client> {
+public class ClientService implements ServiceInterface<Client,Long> {
 
 
     private final ClientRepository clientRepository;

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProductService implements ServiceInterface<Product> {
+public class ProductService implements ServiceInterface<Product,Long> {
 
     private final ProductRepository productRepository;
 

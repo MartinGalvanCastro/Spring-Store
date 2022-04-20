@@ -3,12 +3,12 @@ package com.marting.store.service;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
-public interface ServiceInterface<T> {
+public interface ServiceInterface<T,ID> {
 
     List<T> getAll();
-    T getById(Long id) throws EntityNotFoundException;
+    T getById(ID id) throws EntityNotFoundException;
     T create(T newEntity);
-    T update(Long id, T entity);
-    void delete(Long id);
+    T update(ID id, T entity);
+    void delete(ID id);
 
 }

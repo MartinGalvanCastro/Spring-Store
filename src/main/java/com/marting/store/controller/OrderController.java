@@ -1,15 +1,19 @@
 package com.marting.store.controller;
 
 import com.marting.store.entity.Order;
+import com.marting.store.entity.OrderProduct;
+import com.marting.store.entity.Product;
+import com.marting.store.service.OrderProductService;
 import com.marting.store.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequestMapping("/api/order")
@@ -19,10 +23,15 @@ public class OrderController implements RESTController<Order> {
 
     private final OrderService orderService;
 
+    private final OrderProductService orderProductService;
+
     @Autowired
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService,
+                           OrderProductService orderProductService) {
         this.orderService = orderService;
+        this.orderProductService = orderProductService;
     }
+
 
     /**
      * GET request for returning the list of T entities
@@ -82,4 +91,24 @@ public class OrderController implements RESTController<Order> {
     public void delete(Long id) {
         orderService.delete(id);
     }
+
+    @GetMapping("/{orderId}/product")
+    public List<Product> getProductsOfOrder(@PathVariable("orderId") Long orderId){
+        Order order = orderService.getById(orderId);
+        List<Product> productList = new ArrayList<>();
+        for (OrderProduct orderProduct: order.getOrderProductList()) {
+            productList.add(orderProduct.getProduct());
+        }
+        return productList;
+    }
+
+    @PostMapping("/{orderId}/product/{productId}")
+    public Order addProduct(@PathVariable("orderId") Long orderId,
+                            @PathVariable("productId") Long productId,
+                            @Valid @RequestBody OrderProduct orderProduct){
+        OrderProduct orderProductSaved = orderProductService.createOrderProduct(orderId,productId,orderProduct);
+        return  orderProductSaved.getOrder();
+    }
+
+
 }

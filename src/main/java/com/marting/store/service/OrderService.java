@@ -1,6 +1,7 @@
 package com.marting.store.service;
 
 import com.marting.store.entity.Order;
+import com.marting.store.entity.Product;
 import com.marting.store.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class OrderService implements ServiceInterface<Order> {
+public class OrderService implements ServiceInterface<Order,Long> {
 
     private final OrderRepository orderRepository;
 
@@ -48,4 +49,5 @@ public class OrderService implements ServiceInterface<Order> {
     public void delete(Long id) {
         orderRepository.deleteById(id);
     }
+
 }
